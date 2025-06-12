@@ -7,8 +7,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 
 # --- GANTI DENGAN KUNCI SPOTIFY KAMU ---
-CLIENT_ID = "ISI_CLIENT_ID_KAMU"
-CLIENT_SECRET = "ISI_CLIENT_SECRET_KAMU"
+CLIENT_ID = "ca99f5aa350f44e092573b2060097218"
+CLIENT_SECRET = "94941e9d649644428237d077619d52e9"
 
 # Autentikasi Spotify
 sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
