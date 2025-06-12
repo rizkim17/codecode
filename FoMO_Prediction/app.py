@@ -1,6 +1,8 @@
 import streamlit as st
 import numpy as np
 import joblib
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
 
 st.set_page_config(page_title="Prediksi FoMO", layout="centered")
 st.title("🎯 Prediksi Kecenderungan FoMO (Fear of Missing Out)")
