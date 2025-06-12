@@ -21,6 +21,34 @@ if uploaded_file:
     median_fomo = df['Total_Skor_FoMO'].median()
     df['FOMO_kategori'] = np.where(df['Total_Skor_FoMO'] >= median_fomo, 1, 0)
 
+    # Statistik Deskriptif
+    st.subheader("Statistik Deskriptif")
+
+    # Jumlah laki-laki dan perempuan
+    gender_count = df['Jenis Kelamin'].value_counts()
+    st.write("Jumlah Responden berdasarkan Jenis Kelamin:")
+    st.write(gender_count)
+
+    # Platform media sosial
+    platform_count = df['Platform media sosial yang paling sering digunakan  '].value_counts()
+    st.write("Penggunaan Platform Media Sosial:")
+    st.write(platform_count)
+
+    # Durasi penggunaan medsos
+    usage_count = df['Rata-rata waktu menggunakan media sosial per hari  '].value_counts()
+    st.write("Lama Penggunaan Media Sosial per Hari:")
+    st.write(usage_count)
+
+    # FoMO berdasarkan gender
+    fomo_by_gender = df.groupby(['FOMO_kategori', 'Jenis Kelamin']).size().unstack().fillna(0)
+    st.write("Jumlah FoMO Tinggi dan Rendah berdasarkan Jenis Kelamin:")
+    st.write(fomo_by_gender)
+
+    # Total FOMO
+    fomo_total = df['FOMO_kategori'].value_counts().rename(index={0: 'Rendah', 1: 'Tinggi'})
+    st.write("Total Kecenderungan FoMO:")
+    st.write(fomo_total)
+
     # Encoding
     df['Gender'] = df['Jenis Kelamin'].map({'Laki-laki': 0, 'Perempuan': 1})
     usage_map = {'<1 jam': 0, '1–3 jam': 1, '4–6 jam': 2, '>6 jam': 3}
@@ -30,7 +58,13 @@ if uploaded_file:
 
     features = ['Usia', 'Gender', 'Usage', 'Total_Skor_Intensitas_Medsos',
                 'Total_Skor_Kontrol_Regulasi_Diri'] + list(platform_dummies.columns)
-    X = df[features]
+    X = df[features].copy()
+
+    # Tangani nilai kosong jika ada
+    if X.isnull().sum().sum() > 0:
+        st.warning("Data mengandung nilai kosong. Mengisi dengan nol.")
+        X = X.fillna(0)
+
     y = df['FOMO_kategori']
 
     # Split
@@ -83,5 +117,14 @@ if uploaded_file:
     df_test['Prediksi_FoMO'] = df_test['Prediksi_FoMO'].map({0: 'Rendah', 1: 'Tinggi'})
     df_test['Aktual_FoMO'] = df_test['Aktual_FoMO'].map({0: 'Rendah', 1: 'Tinggi'})
     st.dataframe(df_test.reset_index(drop=True))
+
+    # Kesimpulan
+    st.subheader("Kesimpulan dan Interpretasi")
+    st.markdown("""
+    - Data menunjukkan distribusi responden berdasarkan gender, platform, dan durasi penggunaan media sosial.
+    - Proporsi FoMO tinggi cenderung meningkat pada individu dengan intensitas penggunaan media sosial tinggi.
+    - Variabel kontrol seperti kontrol dan regulasi diri memberikan kontribusi dalam mengurangi kecenderungan FoMO.
+    - Model regresi logistik memiliki performa cukup baik berdasarkan nilai akurasi, F1-score dan AUC.
+    """)
 else:
     st.info("Silakan unggah file CSV untuk mulai analisis.")
